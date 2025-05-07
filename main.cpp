@@ -13,9 +13,9 @@ public:
 		price=p;
 	}
 	int getId(){return id;	}
-	string getName(){return name;	}
-	float getPrice(){return price;	}
-	virtual void display(){
+	string getName()const{return name;	}
+	float getPrice()const{return price;	}
+	virtual void display()const{
 		cout<<"Name: "<<name<<endl<<"Price per unit: "<<price<<endl;
 	}
 };
@@ -25,9 +25,9 @@ class OrderItem: public Product{
 public:
 	OrderItem(int i=0, string n="",float p=0, int q=0): Product(i,n,p), quantity(q){
 	}
-	int getQuantity(){return quantity;}
-	float totalPrice(){return getPrice()*quantity;}
-	void display(){
+	int getQuantity()const{return quantity;}
+	float totalPrice()const{return getPrice()*quantity;}
+	void display() const{
 		Product::display();
 		cout<<"Subtotal: "<<totalPrice()<<endl;
 	}
@@ -51,7 +51,7 @@ public:
 	int getId() const{return orderId;}
 	int getUserId() const{return userId;}
 	string getStatus() const {return status;}
-	string getPaymentMethod() const{return paymentMethod->getPaymentType()}
+	string getPaymentMethod() const{return paymentMethod->getPaymentType();}
 	void setStatus(string stat){status=stat;}
 	// setPayment method (to be after PaymentMethod class is implemented)
 
@@ -65,7 +65,7 @@ public:
 		}
 		return total;
 	}
-	void display() {
+	void display() const {
 		cout<<"Order ID: "<<orderId<<endl;
 		cout<<"User ID: "<<userID<<endl;
 		cout<<"Status: "<<status<<endl;
