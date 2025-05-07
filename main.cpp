@@ -33,6 +33,17 @@ public:
 	}
 };
 
+class PaymentMethod{
+	string paymentType;
+	float amountPaid;
+public:
+	virtual string getPaymentType(){return paymentType;};
+	virtual float getAmountPaid(){return amountPaid;};
+	virtual void pay(float amount) = 0;
+};
+
+// Card,Cash,and EasyPaisa classes
+
 
 class Order{
 	static int nextId;
@@ -46,6 +57,7 @@ public:
 		orderId=nextId++;
 		userId=uid;
 		status="Pending";
+		PaymentMethod* paymentMethod = nullptr;
 	}
 	
 	int getId() const{return orderId;}
@@ -83,3 +95,4 @@ public:
 		cout<<"Total Price: "<<calculateTotalPrice()<<endl;
 	}
 };
+
