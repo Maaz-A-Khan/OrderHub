@@ -12,7 +12,7 @@ public:
 		name=n;
 		price=p;
 	}
-	int getId(){return id;	}
+	int getId()const{return id;	}
 	string getName()const{return name;	}
 	float getPrice()const{return price;	}
 	virtual void display()const{
@@ -37,8 +37,8 @@ class PaymentMethod{
 	string paymentType;
 	float amountPaid;
 public:
-	virtual string getPaymentType(){return paymentType;};
-	virtual float getAmountPaid(){return amountPaid;};
+	virtual string getPaymentType()const{return paymentType;};
+	virtual float getAmountPaid()const{return amountPaid;};
 	virtual void pay(float amount) = 0;
 };
 
@@ -47,19 +47,19 @@ public:
 
 class Order{
 	static int nextId;
-	int orderId, userID;
+	int orderId, userId;
 	string status;
 	vector<OrderItem> cart;
 	PaymentMethod* paymentMethod;
-	
+
 public:
 	Order(int uid){
 		orderId=nextId++;
 		userId=uid;
 		status="Pending";
-		PaymentMethod* paymentMethod = nullptr;
+		paymentMethod = nullptr;
 	}
-	
+
 	int getId() const{return orderId;}
 	int getUserId() const{return userId;}
 	string getStatus() const {return status;}
@@ -79,11 +79,11 @@ public:
 	}
 	void display() const {
 		cout<<"Order ID: "<<orderId<<endl;
-		cout<<"User ID: "<<userID<<endl;
+		cout<<"User ID: "<<userId<<endl;
 		cout<<"Status: "<<status<<endl;
 		cout<<"Payment Method: "<<paymentMethod->getPaymentType()<<endl;
 		cout<<"Items in Cart:" <<endl;
-	
+
 		if (cart.empty()) {
 			cout << "  No items in the cart." << endl;
 		} else {
@@ -95,4 +95,72 @@ public:
 		cout<<"Total Price: "<<calculateTotalPrice()<<endl;
 	}
 };
+class Store{
+	vector<Product> products;
+	vector<Order> orders;
+	Store(){
+		products={};
+		orders={};
+		//will load products and orders from database
+	}
+	public:
+		void addOrder(Order o){orders.push_back(o);}
+		Product* getProductById(int id) {
+		    if (products.empty()) {
+		        cout << "No products available." << endl;
+		        return nullptr;
+		    }
+		    for (auto& prod : products) {
+		        if (prod.getId()==id) {
+		            return &prod;
+		        }
+		    }
+		    cout << "Product not found." << endl;
+		    return nullptr;
+		}
+		void displayProducts(){
+			if(products.empty())
+				cout<<" No Products "<< endl;
+			else{
+				for (const auto& prod : products){
+					prod.display();
+					cout << "-----------------" << endl;
+				}
+			}
+		}
+		void displayOrders(){
+			if(orders.empty())
+				cout<<" No Orders"<<endl;
+			else{
+				for (const auto& ord : orders){
+					ord.display();
+					cout << "-----------------" << endl;
+				}
+			}
+
+		}
+		void trackOrder(int orderId){
+			if(orders.empty())
+				cout<<" No Orders"<<endl;
+			else{
+				bool found = false;
+				for (const auto& ord : orders){
+				    if(ord.getId()==orderId){
+				        cout<<" Order ID= "<<ord.getId()<<endl<<" Status= "<<ord.getStatus() << endl;
+				        cout << "-----------------" << endl;
+				        found = true;
+				        break;
+				    }
+				}
+				if (!found) cout<<" Order not Found"<<endl;
+			}
+		}
+
+
+};
+
+
+
+
+
 
