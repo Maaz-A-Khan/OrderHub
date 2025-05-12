@@ -37,9 +37,10 @@ class PaymentMethod{
 protected:
 	string paymentType;
 	float amountPaid;
+
 public:
-	virtual string getPaymentType()const{return paymentType;};
-	virtual float getAmountPaid()const{return amountPaid;};
+	string getPaymentType()const{return paymentType;};
+	float getAmountPaid()const{return amountPaid;};
 	virtual void pay(float amount) = 0;
 };
 
@@ -47,27 +48,24 @@ class CardPayment : public PaymentMethod {
     string cardNumber;
     string expiry;
     int cvv;
+
 public:
-    CardPayment(string number, string exp, int code) {
-        cardNumber = number;
-        expiry = exp;
-        cvv = code;
+    CardPayment() {
         paymentType = "Card";
-        amountPaid = 0;
-    }
+		amountPaid = 0;
+        }
 
     void pay(float amount){
-        cout << "Processing card payment of $" << amount << "..." << endl;
+        cout << "Enter Card Number: ";
+        cin >> cardNumber;
+        cout << "Enter Expiry Date (MM/YY): ";
+        cin >> expiry;
+        cout << "Enter CVV: ";
+        cin >> cvv;
         amountPaid = amount;
+        cout << "Card payment of Rs. " << amount << " processed successfully.\n";
     }
 
-    string getPaymentType(){
-        return paymentType;
-    }
-
-    float getAmountPaid(){
-        return amountPaid;
-    }
 };
 
 class CashPayment : public PaymentMethod {
@@ -78,16 +76,41 @@ public:
     }
 
     void pay(float amount){
-        cout << "Processing cash payment of $" << amount << "..." << endl;
-        amountPaid = amount;
-    }
+		amountPaid = amount;
+        cout << "Cash on delivery of Rs." << amount << " selected" << endl;
 
-    string getPaymentType(){
-        return paymentType;
     }
+};
 
-    float getAmountPaid(){
-        return amountPaid;
+class EasyPaisaPayment : public PaymentMethod {
+	int accountNumber;
+public:
+	EasyPaisaPayment() {
+		paymentType = "EasyPaisa";
+		amountPaid = 0;
+	}
+
+	void pay(float amount){
+		amountPaid = amount;
+		cout << "Enter EasyPaisa Account Number: ";
+		cin >> accountNumber;
+		cout << "EasyPaisa payment of Rs." << amount << " processed successfully.\n";
+	}
+};
+
+class JazzCashPayment : public PaymentMethod {
+	int accountNumber;	
+public:
+	JazzCashPayment() {
+		paymentType = "JazzCash";
+		amountPaid = 0;
+	}
+
+	void pay(float amount){
+		amountPaid = amount;
+		cout << "Enter JazzCash Account Number: ";
+		cin >> accountNumber;
+		cout << "JazzCash payment of Rs." << amount << " processed successfully.\n";
 	}
 };
 
