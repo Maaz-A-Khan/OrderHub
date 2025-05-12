@@ -129,10 +129,15 @@ public:
 		paymentMethod = nullptr;
 	}
 
+	~Order(){
+		delete paymentMethod;
+	}
+
 	int getId() const{return orderId;}
 	int getUserId() const{return userId;}
 	string getStatus() const {return status;}
 	string getPaymentMethod() const{return paymentMethod->getPaymentType();}
+	
 	void setStatus(string stat){status=stat;}
 	void setPaymentMethod(PaymentMethod* pm){
 		
@@ -166,6 +171,9 @@ public:
 		cout<<"Total Price: "<<calculateTotalPrice()<<endl;
 	}
 };
+
+int Order::nextId = 1;
+
 class Store{
 	vector<Product> products;
 	vector<Order> orders;
