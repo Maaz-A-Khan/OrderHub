@@ -34,6 +34,7 @@ public:
 };
 
 class PaymentMethod{
+protected:
 	string paymentType;
 	float amountPaid;
 public:
@@ -42,8 +43,53 @@ public:
 	virtual void pay(float amount) = 0;
 };
 
-// Card,Cash,and EasyPaisa classes
+class CardPayment : public PaymentMethod {
+    string cardNumber;
+    string expiry;
+    int cvv;
+public:
+    CardPayment(string number, string exp, int code) {
+        cardNumber = number;
+        expiry = exp;
+        cvv = code;
+        paymentType = "Card";
+        amountPaid = 0;
+    }
 
+    void pay(float amount){
+        cout << "Processing card payment of $" << amount << "..." << endl;
+        amountPaid = amount;
+    }
+
+    string getPaymentType(){
+        return paymentType;
+    }
+
+    float getAmountPaid(){
+        return amountPaid;
+    }
+};
+
+class CashPayment : public PaymentMethod {
+public:
+    CashPayment() {
+        paymentType = "Cash";
+        amountPaid = 0;
+    }
+
+    void pay(float amount){
+        cout << "Processing cash payment of $" << amount << "..." << endl;
+        amountPaid = amount;
+    }
+
+    string getPaymentType(){
+        return paymentType;
+    }
+
+    float getAmountPaid(){
+        return amountPaid;
+	}
+};
 
 class Order{
 	static int nextId;
@@ -65,7 +111,9 @@ public:
 	string getStatus() const {return status;}
 	string getPaymentMethod() const{return paymentMethod->getPaymentType();}
 	void setStatus(string stat){status=stat;}
-	// setPayment method (to be after PaymentMethod class is implemented)
+	void setPaymentMethod(PaymentMethod* pm){
+		
+	}
 
 	void addItem(OrderItem item){
 		cart.push_back(item);
