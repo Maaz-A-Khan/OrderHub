@@ -189,8 +189,18 @@ class Store{
 	}
 
 	public:
+		void addProduct(const Product& p){products.push_back(p);}
 		void addOrder(Order o){orders.push_back(o);}
-		
+
+		void editProduct(int id, const string& newName, float newPrice) {
+			for (auto& p : products) {
+				if (p.getId() == id) {
+					p = Product(id, newName, newPrice);
+					break;
+				}
+			}
+   		}
+
 		Product* getProductById(int id) {
 		    if (products.empty()) {
 		        cout << "No products available." << endl;
@@ -204,6 +214,7 @@ class Store{
 		    cout << "Product not found." << endl;
 		    return nullptr;
 		}
+
 		void displayProducts(){
 			if(products.empty())
 				cout<<" No Products "<< endl;
@@ -225,22 +236,34 @@ class Store{
 			}
 
 		}
-		void displayOrders(int userId){
-			if(orders.empty())
-				cout<<" No Orders"<<endl;
-			else{
-				bool found = false;
-				for (const auto& ord : orders){
-				    if(ord.getUserId()==userId){
-				        ord.display();
-				        cout << "-----------------" << endl;
-				        found = true;
-				    }
-				}
-				if (!found) cout<<" No Orders for this user"<<endl;
-			}
-			
+		void displayUserOrders(int userId) const {
+			if (orders.empty()) {
+			cout << "No orders found." << endl;
+			return;
 		}
+        bool found = false;
+        for (const auto& o : orders) {
+            if (o.getUserId() == userId) {
+                o.display();
+                found = true;
+            }
+        }
+        if (!found) {
+            cout << "No orders found for User ID " << userId << ".\n";
+        }
+    }
+
+		void updateOrderStatus(int orderId, const string& status) {
+        for (auto& o : orders) {
+            if (o.getId() == orderId) {
+                o.setStatus(status);
+                cout << "Order status updated.\n";
+                return;
+            }
+        }
+        cout << "Order not found.\n";
+    	}
+
 		void trackOrder(int orderId){
 			if(orders.empty())
 				cout<<" No Orders"<<endl;
@@ -260,35 +283,48 @@ class Store{
 
 
 };
-class Admin:protected Store{
+class Admin{
 	public:
-		void addProduct(Product p){
-			products.push_back(p);
+		void viewProducts(Store& store){
+			cout<<"All Products:\n";
+			store.displayProducts();
 		}
-		void editProduct(int id, string name, float price){
-			if (products.empty()) {
-		        cout << "Product doesn't exist'" << endl;
-
-		    }
-		    for (auto& prod : products) {
-		        if (prod.getId()==id) {
-		            prod.setName(name);
-		            prod.setPrice(price);
-		        }
-		    }
+		void addProduct(Store& store){
+			int id;
+			string name;
+			float price;
+			cout<<"Enter Product ID: ";
+			cin>>id;
+			cout<<"Enter Product Name: ";
+			cin.ignore();
+			getline(cin,name);
+			cout<<"Enter Price: ";
+			cin>>price;
+			store.addProduct(Product(id,name,price));
+			cout<<"Product added!\n";
 		}
-		void updateOrderStatus(int ordId, string status){
-			if(orders.empty())
-				cout<<" No Orders"<<endl;
-			else{
-				bool found = false;
-				for (auto& ord : orders){
-				    if(ord.getId()==ordId){
-				        ord.setStatus(status);
-				    }
-				}
-				if (!found) cout<<" Order not Found"<<endl;
-			}
+		void editProduct(Store& store){
+			int id;
+			string name;
+			float price;
+			cout<<"Enter Product ID to edit: ";
+			cin>>id;
+			cout<<"New Name: ";
+			cin.ignore();
+			getline(cin,name);
+			cout<<"New Price: ";
+			cin>>price;
+			store.editProduct(id,name,price);
+			cout<<"Product updated!\n";
+		}
+		void updateOrderStatus(Store& store){
+			int orderId;
+			string status;
+			cout << "Enter Order ID to update: ";
+			cin >> orderId;
+			cout << "New Status: ";
+			cin>>status;
+			store.updateOrderStatus(orderId, status);
 		}
 };
 
@@ -370,7 +406,7 @@ public:
 	}
 
 	void viewMyOrders(Store& store) {
-		store.displayOrders(id);
+		store.displayUserOrders(id);
 	}
 
 };
