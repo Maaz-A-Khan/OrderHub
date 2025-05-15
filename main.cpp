@@ -140,7 +140,8 @@ public:
 	
 	void setStatus(string stat){status=stat;}
 	void setPaymentMethod(PaymentMethod* pm){
-		
+		paymentMethod = pm;
+        paymentMethod->pay(calculateTotalPrice());
 	}
 
 	void addItem(OrderItem item){
@@ -223,13 +224,13 @@ class Store{
 			}
 
 		}
-		void displayOrders(User & user){
+		void displayOrders(int userId){
 			if(orders.empty())
 				cout<<" No Orders"<<endl;
 			else{
 				bool found = false;
 				for (const auto& ord : orders){
-				    if(ord.getUserId()==user.getId()){
+				    if(ord.getUserId()==userId){
 				        ord.display();
 				        cout << "-----------------" << endl;
 				        found = true;
@@ -237,7 +238,7 @@ class Store{
 				}
 				if (!found) cout<<" No Orders for this user"<<endl;
 			}
-
+			
 		}
 		void trackOrder(int orderId){
 			if(orders.empty())
@@ -331,7 +332,7 @@ public:
 	}
 
 	void viewMyOrders(Store& store) {
-		store.displayOrders();
+		store.displayOrders(id);
 	}
 
 };
