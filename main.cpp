@@ -77,7 +77,7 @@ public:
 
     void pay(float amount){
 		amountPaid = amount;
-        cout << "Cash on delivery of Rs." << amount << " selected" << endl;
+        cout << "Cash on delivery of Rs." << amount <<"selected" << endl;
 
     }
 };
@@ -184,6 +184,7 @@ class Store{
 	}
 	public:
 		void addOrder(Order o){orders.push_back(o);}
+		
 		Product* getProductById(int id) {
 		    if (products.empty()) {
 		        cout << "No products available." << endl;
@@ -218,6 +219,22 @@ class Store{
 			}
 
 		}
+		void displayOrders(User & user){
+			if(orders.empty())
+				cout<<" No Orders"<<endl;
+			else{
+				bool found = false;
+				for (const auto& ord : orders){
+				    if(ord.getUserId()==user.getId()){
+				        ord.display();
+				        cout << "-----------------" << endl;
+				        found = true;
+				    }
+				}
+				if (!found) cout<<" No Orders for this user"<<endl;
+			}
+
+		}
 		void trackOrder(int orderId){
 			if(orders.empty())
 				cout<<" No Orders"<<endl;
@@ -238,7 +255,82 @@ class Store{
 
 };
 
+class User{
+	int id;
+	string name;
+public:
+	User(int i=0, string n=""){
+		id=i;
+		name=n;
+	}
+	int getId() const{return id;}
+	string getName() const{return name;}
+	void viewProducts(Store& store){
+		cout<<"All Products:\n";
+		store.displayProducts();
+	}
+	void placeOrder(Store& store) {
+        Order order(id);
+        int pid, qty;
+        char choice;
 
+        do {
+            cout << "Enter Product ID to add: ";
+            cin >> pid;
+            cout << "Quantity: ";
+            cin >> qty;
+            Product* product = store.getProductById(pid);
+            if (product) {
+                order.addItem(OrderItem(pid, product->getName(), product->getPrice(), qty));
+            } else {
+                cout << "Product not found.\n";
+            }
+            cout << "Add more items? (y/n): ";
+            cin >> choice;
+        } while (choice == 'y');
+
+        order.display();
+        cout << "Proceed with payment? (y/n): ";
+        cin >> choice;
+
+        if (choice == 'y') {
+            int paymentOption;
+            PaymentMethod* payment = nullptr;
+            cout << "Choose payment method (1. Card, 2. Cash): ";
+            cin >> paymentOption;
+
+            switch (paymentOption) {
+                case 1: 
+					payment = new CardPayment(); 
+					break;
+                case 2: 
+					payment = new CashPayment(); 
+					break;
+                default: 
+					cout << "Invalid option. Defaulting to Cash.\n"; 
+					payment = new CashPayment();
+            }
+
+            order.setPaymentMethod(payment);
+            store.addOrder(order);
+            cout << "Order placed successfully!\n";
+        } else {
+            cout << "Order cancelled.\n";
+        }
+	}
+	
+	void trackOrder(Store& store) {
+		int orderId;
+		cout << "Enter Order ID to track: ";
+		cin >> orderId;
+		store.trackOrder(orderId);
+	}
+
+	void viewMyOrders(Store& store) {
+		store.displayOrders();
+	}
+
+};
 
 
 
