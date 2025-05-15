@@ -142,12 +142,8 @@ public:
 
 	void setStatus(string stat){status=stat;}
 	void setPaymentMethod(PaymentMethod* pm){
-<<<<<<< Updated upstream
 		paymentMethod = pm;
         paymentMethod->pay(calculateTotalPrice());
-=======
-
->>>>>>> Stashed changes
 	}
 
 	void addItem(OrderItem item){
