@@ -178,17 +178,16 @@ public:
 int Order::nextId = 1;
 
 class Store{
-	vector<Product> products;
-	vector<Order> orders;
-	Store(){
-		products={};
-		orders={};
+	protected:
+		vector<Product> products;
+		vector<Order> orders;
+	private:
+		Store(){
+			products={};
+			orders={};
 		//will load products and orders from database
 	}
-	protected:
-		void addProd(Product p){
-			products.push_back(p);
-		}
+
 	public:
 		void addOrder(Order o){orders.push_back(o);}
 		
@@ -264,12 +263,12 @@ class Store{
 class Admin:protected Store{
 	public:
 		void addProduct(Product p){
-			addProd(p);
+			products.push_back(p);
 		}
 		void editProduct(int id, string name, float price){
 			if (products.empty()) {
 		        cout << "Product doesn't exist'" << endl;
-		        return nullptr;
+
 		    }
 		    for (auto& prod : products) {
 		        if (prod.getId()==id) {
@@ -283,7 +282,7 @@ class Admin:protected Store{
 				cout<<" No Orders"<<endl;
 			else{
 				bool found = false;
-				for (const auto& ord : orders){
+				for (auto& ord : orders){
 				    if(ord.getId()==ordId){
 				        ord.setStatus(status);
 				    }
