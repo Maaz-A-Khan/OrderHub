@@ -333,7 +333,7 @@ public:
         if (choice == 'y') {
             int paymentOption;
             PaymentMethod* payment = nullptr;
-            cout << "Choose payment method (1. Card, 2. Cash): ";
+            cout << "Choose payment method (1. Card, 2. Cash, 3. EasyPaisa, 4. JazzCash): ";
             cin >> paymentOption;
 
             switch (paymentOption) {
@@ -342,6 +342,12 @@ public:
 					break;
                 case 2: 
 					payment = new CashPayment(); 
+					break;
+				case 3:
+					payment = new EasyPaisaPayment();
+					break;
+				case 4:
+					payment = new JazzCashPayment();
 					break;
                 default: 
 					cout << "Invalid option. Defaulting to Cash.\n"; 
