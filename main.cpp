@@ -182,6 +182,10 @@ class Store{
 		orders={};
 		//will load products and orders from database
 	}
+	protected:
+		void addProd(Product p){
+			products.push_back(p);
+		}
 	public:
 		void addOrder(Order o){orders.push_back(o);}
 		
