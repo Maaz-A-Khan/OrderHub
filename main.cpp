@@ -12,6 +12,8 @@ public:
 		name=n;
 		price=p;
 	}
+	void setName(string n){name=n;}
+	void setPrice(float p){price=p;}
 	int getId()const{return id;	}
 	string getName()const{return name;	}
 	float getPrice()const{return price;	}
@@ -99,7 +101,7 @@ public:
 };
 
 class JazzCashPayment : public PaymentMethod {
-	int accountNumber;	
+	int accountNumber;
 public:
 	JazzCashPayment() {
 		paymentType = "JazzCash";
@@ -137,11 +139,15 @@ public:
 	int getUserId() const{return userId;}
 	string getStatus() const {return status;}
 	string getPaymentMethod() const{return paymentMethod->getPaymentType();}
-	
+
 	void setStatus(string stat){status=stat;}
 	void setPaymentMethod(PaymentMethod* pm){
+<<<<<<< Updated upstream
 		paymentMethod = pm;
         paymentMethod->pay(calculateTotalPrice());
+=======
+
+>>>>>>> Stashed changes
 	}
 
 	void addItem(OrderItem item){
@@ -258,6 +264,37 @@ class Store{
 		}
 
 
+};
+class Admin:protected Store{
+	public:
+		void addProduct(Product p){
+			addProd(p);
+		}
+		void editProduct(int id, string name, float price){
+			if (products.empty()) {
+		        cout << "Product doesn't exist'" << endl;
+		        return nullptr;
+		    }
+		    for (auto& prod : products) {
+		        if (prod.getId()==id) {
+		            prod.setName(name);
+		            prod.setPrice(price);
+		        }
+		    }
+		}
+		void updateOrderStatus(int ordId, string status){
+			if(orders.empty())
+				cout<<" No Orders"<<endl;
+			else{
+				bool found = false;
+				for (const auto& ord : orders){
+				    if(ord.getId()==ordId){
+				        ord.setStatus(status);
+				    }
+				}
+				if (!found) cout<<" Order not Found"<<endl;
+			}
+		}
 };
 
 class User{
