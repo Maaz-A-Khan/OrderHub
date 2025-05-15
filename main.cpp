@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 using namespace std;
 
 class Product{
@@ -134,7 +135,7 @@ public:
 	~Order(){
 		delete paymentMethod;
 	}
-
+	const vector<OrderItem>& getCart() const { return cart; }
 	int getId() const{return orderId;}
 	int getUserId() const{return userId;}
 	string getStatus() const {return status;}
@@ -183,12 +184,124 @@ class Store{
 		vector<Order> orders;
 	private:
 		Store(){
-			products={};
-			orders={};
-		//will load products and orders from database
-	}
+        loadProducts();
+        loadOrders();
+	    }
+	    void loadProducts(){
+	        ifstream fin("products.bin", ios::binary);
+	        if (!fin) {
+	            ofstream fout("products.bin", ios::binary); // create file
+	            return;
+	        }
+	        int id;
+	        float price;
+	        size_t len;
+	        string name;
+	        while (fin.read(reinterpret_cast<char*>(&id), sizeof(id))) {
+	            fin.read(reinterpret_cast<char*>(&len), sizeof(len));
+	            name.resize(len);
+	            fin.read(&name[0], len);
+	            fin.read(reinterpret_cast<char*>(&price), sizeof(price));
+	            products.emplace_back(id, name, price);
+	        }
+	        fin.close();
+	    }
+	    void loadOrders(){
+	        ifstream fin("orders.bin", ios::binary);
+	        if (!fin) {
+	            ofstream fout("orders.bin", ios::binary); // create file
+	            return;
+	        }
+	        int oid, uid, cartSize, pid, qty;
+	        float price;
+	        size_t len;
+	        string status, name;
+	        while (fin.read(reinterpret_cast<char*>(&oid), sizeof(oid))) {
+	            fin.read(reinterpret_cast<char*>(&uid), sizeof(uid));
+	            fin.read(reinterpret_cast<char*>(&len), sizeof(len));
+	            status.resize(len);
+	            fin.read(&status[0], len);
+	            Order order(uid);
+	            order.setStatus(status);
+
+	            fin.read(reinterpret_cast<char*>(&cartSize), sizeof(cartSize));
+	            for (int i = 0; i < cartSize; ++i) {
+	                fin.read(reinterpret_cast<char*>(&pid), sizeof(pid));
+	                fin.read(reinterpret_cast<char*>(&len), sizeof(len));
+	                name.resize(len);
+	                fin.read(&name[0], len);
+	                fin.read(reinterpret_cast<char*>(&price), sizeof(price));
+	                fin.read(reinterpret_cast<char*>(&qty), sizeof(qty));
+	                order.addItem(OrderItem(pid, name, price, qty));
+	            }
+	            orders.push_back(order);
+	        }
+	        fin.close();
+	    }
 
 	public:
+	    static Store& getInstance() {
+	        static Store instance;
+	        return instance;
+	    }
+
+	    Store(Store const&) = delete;
+	    Store(Store&&) = delete;
+	    Store& operator=(Store const&) = delete;
+	    Store& operator=(Store&&) = delete;
+
+		~Store(){
+        saveProducts();
+        saveOrders();
+    	}
+
+	    void saveProducts(){
+
+	        ofstream fout("products.bin", ios::binary | ios::trunc);
+	        for (const auto& p : products){
+	            int id = p.getId();
+	            string name = p.getName();
+	            float price = p.getPrice();
+	            size_t len = name.size();
+	            fout.write(reinterpret_cast<char*>(&id), sizeof(id));
+	            fout.write(reinterpret_cast<char*>(&len), sizeof(len));
+	            fout.write(name.c_str(), len);
+	            fout.write(reinterpret_cast<char*>(&price), sizeof(price));
+	        }
+	        fout.close();
+	    }
+
+	    void saveOrders(){
+	        ofstream fout("orders.bin", ios::binary | ios::trunc);
+	        for (const auto& o : orders){
+	            int oid = o.getId();
+	            int uid = o.getUserId();
+	            string status = o.getStatus();
+	            size_t len = status.size();
+	            fout.write(reinterpret_cast<char*>(&oid), sizeof(oid));
+	            fout.write(reinterpret_cast<char*>(&uid), sizeof(uid));
+	            fout.write(reinterpret_cast<char*>(&len), sizeof(len));
+	            fout.write(status.c_str(), len);
+
+	            const vector<OrderItem>& cart = o.getCart();
+	            int cartSize = cart.size();
+	            fout.write(reinterpret_cast<char*>(&cartSize), sizeof(cartSize));
+
+	            for (const auto& item : cart){
+	                int pid = item.getId();
+	                string name = item.getName();
+	                float price = item.getPrice();
+	                int qty = item.getQuantity();
+	                len = name.size();
+	                fout.write(reinterpret_cast<char*>(&pid), sizeof(pid));
+	                fout.write(reinterpret_cast<char*>(&len), sizeof(len));
+	                fout.write(name.c_str(), len);
+	                fout.write(reinterpret_cast<char*>(&price), sizeof(price));
+	                fout.write(reinterpret_cast<char*>(&qty), sizeof(qty));
+	            }
+	        }
+	        fout.close();
+	    }
 		void addProduct(const Product& p){products.push_back(p);}
 		void addOrder(Order o){orders.push_back(o);}
 
@@ -410,7 +523,4 @@ public:
 	}
 
 };
-
-
-
 
