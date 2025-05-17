@@ -524,3 +524,12 @@ public:
 
 };
 
+int authenticator(string username,string password){
+	if (username=="user123" && password=="user123"){
+		return 1;
+	}else 	if (username=="admin123" && password=="admin123"){
+		return 2;
+	}else{
+		return 3;
+	}
+}
