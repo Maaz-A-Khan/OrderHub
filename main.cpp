@@ -4,12 +4,13 @@
 using namespace std;
 
 class Product{
+	static int nextId;
 	int id;
 	string name;
 	float price;
 public:
-	Product(int i=0, string n="", float p=0){
-		id=i;
+	Product(string n="", float p=0){
+		id=nextId++;
 		name=n;
 		price=p;
 	}
@@ -22,6 +23,8 @@ public:
 		cout<<"Name: "<<name<<endl<<"Price per unit: "<<price<<endl;
 	}
 };
+
+int Product::nextId = 1;
 
 class OrderItem: public Product{
 	int quantity;
@@ -42,8 +45,8 @@ protected:
 	float amountPaid;
 
 public:
-	string getPaymentType()const{return paymentType;};
-	float getAmountPaid()const{return amountPaid;};
+	string getPaymentType()const{return paymentType;}
+	float getAmountPaid()const{return amountPaid;}
 	virtual void pay(float amount) = 0;
 };
 
@@ -308,7 +311,7 @@ class Store{
 		void editProduct(int id, const string& newName, float newPrice) {
 			for (auto& p : products) {
 				if (p.getId() == id) {
-					p = Product(id, newName, newPrice);
+					p = Product(newName, newPrice);
 					break;
 				}
 			}
@@ -402,18 +405,15 @@ class Admin{
 			cout<<"All Products:\n";
 			store.displayProducts();
 		}
+
 		void addProduct(Store& store){
-			int id;
 			string name;
 			float price;
-			cout<<"Enter Product ID: ";
-			cin>>id;
 			cout<<"Enter Product Name: ";
-			cin.ignore();
-			getline(cin,name);
+			cin>>name;
 			cout<<"Enter Price: ";
 			cin>>price;
-			store.addProduct(Product(id,name,price));
+			store.addProduct(Product(name,price));
 			cout<<"Product added!\n";
 		}
 		void editProduct(Store& store){
